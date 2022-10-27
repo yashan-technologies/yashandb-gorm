@@ -1,14 +1,12 @@
-module cod-git.sics.com/cod-noah/gorm-yasdb
+module git.yasdb.com/cod-noah/gorm-yasdb
 
 go 1.16
 
 require (
-	cod-git.sics.com/cod-noah/yasdb-go v1.0.1
+	git.yasdb.com/cod-noah/yasdb-go v0.0.0-20221026071437-cd1a5ba5e81c
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/emirpasic/gods v1.18.1
+	github.com/stretchr/testify v1.5.1 // indirect
 	github.com/thoas/go-funk v0.9.2
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
-	gorm.io/gorm v1.23.4
+	gorm.io/gorm v1.21.8
 )
-
-replace cod-git.sics.com/cod-noah/yasdb-go v1.0.1 => /home/yangdeliu/gitlab/yasdb-go

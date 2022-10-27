@@ -14,6 +14,80 @@ type Migrator struct {
     migrator.Migrator
 }
 
+// AutoMigrate auto migrate values
+func (m Migrator) AutoMigrate(values ...interface{}) error {
+    for _, value := range m.ReorderModels(values, true) {
+        tx := m.DB.Session(&gorm.Session{})
+        if !tx.Migrator().HasTable(value) {
+            if err := tx.Migrator().CreateTable(value); err != nil {
+                return err
+            }
+        } else {
+            if err := m.RunWithValue(value, func(stmt *gorm.Statement) (errr error) {
+                columnTypes, _ := m.DB.Migrator().ColumnTypes(value)
+
+                for _, dbName := range stmt.Schema.DBNames {
+                    field := stmt.Schema.FieldsByDBName[dbName]
+                    var foundColumn gorm.ColumnType
+
+                    for _, columnType := range columnTypes {
+                        if columnType.Name() == dbName {
+                            foundColumn = columnType
+                            break
+                        }
+                    }
+
+                    if foundColumn == nil {
+                        // not found, add column
+                        if err := tx.Migrator().AddColumn(value, dbName); err != nil {
+                            return err
+                        }
+                    } else if err := m.DB.Migrator().MigrateColumn(value, field, foundColumn); err != nil {
+                        // found, smart migrate
+                        return err
+                    }
+                }
+
+                for _, rel := range stmt.Schema.Relationships.Relations {
+                    if !m.DB.Config.DisableForeignKeyConstraintWhenMigrating {
+                        if constraint := rel.ParseConstraint(); constraint != nil &&
+                            constraint.Schema == stmt.Schema && !tx.Migrator().HasConstraint(value, constraint.Name) {
+                            if err := tx.Migrator().CreateConstraint(value, constraint.Name); err != nil {
+                                return err
+                            }
+                        }
+                    }
+
+                    for _, chk := range stmt.Schema.ParseCheckConstraints() {
+                        if !tx.Migrator().HasConstraint(value, chk.Name) {
+                            if err := tx.Migrator().CreateConstraint(value, chk.Name); err != nil {
+                                return err
+                            }
+                        }
+                    }
+                }
+
+                for _, idx := range stmt.Schema.ParseIndexes() {
+                    if !tx.Migrator().HasIndex(value, idx.Name) {
+                        if err := tx.Migrator().CreateIndex(value, idx.Name); err != nil {
+                            return err
+                        }
+                    }
+                }
+
+                return nil
+            }); err != nil {
+                return err
+            }
+            if err := m.TryQuotifyReservedWords(value); err != nil {
+                return err
+            }
+        }
+
+    }
+    return nil
+}
+
 func (m Migrator) CurrentDatabase() (name string) {
     m.DB.Raw(
         `SELECT DATABASE_NAME as "Current Database" FROM v$database`,
@@ -111,7 +185,7 @@ func (m Migrator) ColumnTypes(value interface{}) ([]gorm.ColumnType, error) {
         }
 
         for _, c := range rawColumnTypes {
-            columnTypes = append(columnTypes, migrator.ColumnType{SQLColumnType: c})
+            columnTypes = append(columnTypes, c)
         }
         return
     })
@@ -125,9 +199,13 @@ func (m Migrator) AddColumn(value interface{}, field string) error {
     }
     return m.RunWithValue(value, func(stmt *gorm.Statement) error {
         if field := stmt.Schema.LookUpField(field); field != nil {
+            dbName := field.DBName
+            if IsReservedWord(dbName) {
+                dbName = fmt.Sprintf(`"%s"`, dbName)
+            }
             return m.DB.Exec(
                 "ALTER TABLE ? ADD ? ?",
-                clause.Table{Name: stmt.Table}, clause.Column{Name: field.DBName}, m.DB.Migrator().FullDataTypeOf(field),
+                clause.Table{Name: stmt.Table}, clause.Column{Name: dbName}, m.DB.Migrator().FullDataTypeOf(field),
             ).Error
         }
         return fmt.Errorf("failed to look up field with name: %s", field)
@@ -153,17 +231,21 @@ func (m Migrator) DropColumn(value interface{}, name string) error {
 }
 
 func (m Migrator) AlterColumn(value interface{}, field string) error {
-    field = strings.ToUpper(field)
+    // field = strings.ToUpper(field)
     if !m.HasColumn(value, field) {
         return nil
     }
 
     return m.RunWithValue(value, func(stmt *gorm.Statement) error {
         if field := stmt.Schema.LookUpField(field); field != nil {
+            dbName := field.DBName
+            if IsReservedWord(dbName) {
+                dbName = fmt.Sprintf(`"%s"`, dbName)
+            }
             return m.DB.Exec(
                 "ALTER TABLE ? MODIFY ? ?",
                 clause.Table{Name: stmt.Table},
-                clause.Column{Name: field.DBName},
+                clause.Column{Name: dbName},
                 m.FullDataTypeOf(field),
             ).Error
         }
@@ -174,11 +256,14 @@ func (m Migrator) AlterColumn(value interface{}, field string) error {
 func (m Migrator) HasColumn(value interface{}, field string) bool {
     var count int64
     return m.RunWithValue(value, func(stmt *gorm.Statement) error {
-        return m.DB.Raw(
-            "SELECT COUNT(1) FROM USER_TAB_COLUMNS WHERE TABLE_NAME = ? AND COLUMN_NAME = ?",
-            strings.ToUpper(stmt.Table),
-            strings.ToUpper(field),
-        ).Row().Scan(&count)
+        if field := stmt.Schema.LookUpField(field); field != nil {
+            return m.DB.Raw(
+                "SELECT COUNT(1) FROM USER_TAB_COLUMNS WHERE TABLE_NAME = ? AND COLUMN_NAME = ?",
+                stmt.Table,
+                field.DBName,
+            ).Row().Scan(&count)
+        }
+        return fmt.Errorf("failed to look up field with name: %s", field)
     }) == nil && count > 0
 }
 
@@ -278,6 +363,10 @@ func (m Migrator) TryQuotifyReservedWords(value interface{}) error {
             if IsReservedWord(v.DBName) {
                 v.DBName = fmt.Sprintf(`"%s"`, v.DBName)
             }
+        }
+        tableName := stmt.Schema.Table
+        if IsReservedWord(tableName) {
+            stmt.Schema.Table = fmt.Sprintf(`"%s"`, tableName)
         }
         return nil
     })

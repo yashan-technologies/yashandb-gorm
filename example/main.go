@@ -3,7 +3,7 @@ package main
 import (
     "fmt"
 
-    yasdb "cod-git.sics.com/cod-noah/gorm-yasdb"
+    yasdb "git.yasdb.com/cod-noah/gorm-yasdb"
     "gorm.io/gorm"
 )
 
@@ -21,7 +21,7 @@ type TaskResult struct {
 }
 
 func main() {
-    dsn := "sys/sys@192.168.30.220:1690"
+    dsn := "sys/yasdb_123@192.168.6.177:1688"
     db, err := gorm.Open(yasdb.Open(dsn), &gorm.Config{})
     if err != nil {
         panic(err)

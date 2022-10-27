@@ -1,6 +1,7 @@
 package yasdb
 
 import (
+    "fmt"
     "strings"
 
     "github.com/emirpasic/gods/sets/hashset"
@@ -11,6 +12,20 @@ var ReservedWords = hashset.New(funk.Map(ReservedWordsList, func(s string) inter
 
 func IsReservedWord(v string) bool {
     return ReservedWords.Contains(strings.ToUpper(v))
+}
+
+func TryRemoveQuotes(name string) string {
+    if len(name) > 1 && name[:1] == "\"" && name[len(name)-1:] == "\"" {
+        name = name[1 : len(name)-1]
+    }
+    return name
+}
+
+func TryQuoteReservedWord(name string) string {
+    if IsReservedWord(name) {
+        return fmt.Sprintf(`"%s"`, name)
+    }
+    return name
 }
 
 var ReservedWordsList = []string{
@@ -26,5 +41,5 @@ var ReservedWordsList = []string{
     "PARALLEL", "PARENT", "PLSQL", "PRUNE", "RAW", "RELATIVE", "ROOT_ANCESTOR", "ROWID", "SCN", "SECOND", "SELF",
     "SERIAL", "SET", "SOLVE", "SOME", "SORT", "SPEC", "SUM", "SYNCH", "TEXT_MEASURE", "THEN", "TIME", "TIMESTAMP",
     "TO", "UNBRANCH", "UPDATE", "USING", "VALIDATE", "VALUES", "VARCHAR2", "WHEN", "WHERE", "WITHIN", "WITH", "YEAR",
-    "ZERO", "ZONE",
+    "ZERO", "ZONE", "USER", "ROLE", "CREATE", "CURRENT",
 }
