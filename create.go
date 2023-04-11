@@ -13,20 +13,21 @@ import (
 
 func Create(db *gorm.DB) {
     stmt := db.Statement
+    if stmt == nil {
+        return
+    }
     schema := stmt.Schema
-    boundVars := make(map[string]int)
-
-    if stmt == nil || schema == nil {
+    if schema == nil {
         return
     }
 
     hasDefaultValues := len(schema.FieldsWithDefaultDBValue) > 0
-
     if !stmt.Unscoped {
         for _, c := range schema.CreateClauses {
             stmt.AddClause(c)
         }
     }
+    boundVars := make(map[string]int)
 
     if stmt.SQL.String() == "" {
         values := callbacks.ConvertToCreateValues(stmt)
@@ -62,9 +63,7 @@ func Create(db *gorm.DB) {
             if hasDefaultValues && !hasConflict {
                 for idx, vals := range values.Values {
                     // HACK HACK: replace values one by one, assuming its value layout will be the same all the time, i.e. aligned
-                    for idx, val := range vals {
-                        stmt.Vars[idx] = val
-                    }
+                    copy(stmt.Vars, vals)
                     switch result, err := stmt.ConnPool.ExecContext(stmt.Context, stmt.SQL.String(), stmt.Vars...); err {
                     case nil: // success
                         db.RowsAffected, _ = result.RowsAffected()

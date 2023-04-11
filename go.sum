@@ -1,5 +1,5 @@
-git.yasdb.com/cod-noah/yasdb-go v0.0.0-20221026071437-cd1a5ba5e81c h1:7Jy9lIQ7jW/DsXVK3bEyFefnQ1/D2A63cynWMe0Dcng=
-git.yasdb.com/cod-noah/yasdb-go v0.0.0-20221026071437-cd1a5ba5e81c/go.mod h1:BnVxv6s2HPaYH9rNy8CyMA7FqywyjohdbQqLcHmylQc=
+git.yasdb.com/go/yasdb-go v1.3.0 h1:kgFFi+f3Tw8Ayer2H9yOPGqmTcuqd8H4DkPEseJViCI=
+git.yasdb.com/go/yasdb-go v1.3.0/go.mod h1:4inehVQ5E6pnVV52sxkmPrtsMX9VL/ioaggtcIKecRw=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

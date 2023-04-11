@@ -9,7 +9,7 @@ import (
 
     "git.yasdb.com/cod-noah/gorm-yasdb/clauses"
 
-    _ "git.yasdb.com/cod-noah/yasdb-go"
+    _ "git.yasdb.com/go/yasdb-go"
     "gorm.io/gorm"
     "gorm.io/gorm/callbacks"
     "gorm.io/gorm/clause"
