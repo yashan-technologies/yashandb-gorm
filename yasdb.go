@@ -41,8 +41,8 @@ func New(config Config) gorm.Dialector {
     return &Dialector{Config: &config}
 }
 
-func SeqName(table string) string {
-    return fmt.Sprintf("sequence__%s_", TryRemoveQuotes(table))
+func GenSequenceName(table string) string {
+    return strings.ToUpper(fmt.Sprintf("sequence__%s_", TryRemoveQuotes(table)))
 }
 
 func (d Dialector) DummyTableName() string {
@@ -281,7 +281,7 @@ func (d Dialector) DataTypeOf(field *schema.Field) string {
     case schema.Int, schema.Uint:
         sqlType = "BIGINT"
         if field.AutoIncrement {
-            sqlType += fmt.Sprintf(" default %s.nextval", SeqName(field.Schema.Table))
+            sqlType += fmt.Sprintf(" default %s.nextval", GenSequenceName(field.Schema.Table))
         }
     case schema.Float:
         sqlType = "DOUBLE"

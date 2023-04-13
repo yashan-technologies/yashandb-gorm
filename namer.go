@@ -36,6 +36,5 @@ func (n Namer) CheckerName(table, column string) (name string) {
 
 func (n Namer) IndexName(table, column string) (name string) {
     table = TryRemoveQuotes(table)
-    name = TryRemoveQuotes(name)
     return ConvertNameToFormat(n.NamingStrategy.IndexName(table, column))
 }
