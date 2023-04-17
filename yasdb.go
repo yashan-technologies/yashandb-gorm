@@ -305,7 +305,7 @@ func (d Dialector) DataTypeOf(field *schema.Field) string {
             sqlType += " NOT NULL"
         }
     case JSON:
-        sqlType = "VARCHAR(8000)"
+        sqlType = "BLOB"
     case schema.Bytes:
         sqlType = "BLOB"
     default:
