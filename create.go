@@ -12,6 +12,9 @@ import (
 )
 
 func Create(db *gorm.DB) {
+    if db.Error != nil {
+        return
+    }
     stmt := db.Statement
     if stmt == nil {
         return
