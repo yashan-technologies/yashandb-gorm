@@ -3,7 +3,7 @@ module git.yasdb.com/go/gorm-yasdb
 go 1.16
 
 require (
-	git.yasdb.com/go/yasdb-go v0.0.0-20231220071058-8e121c9b9356
+	git.yasdb.com/go/yasdb-go v1.3.2-0.20240130120530-c7f288c8a46b
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/emirpasic/gods v1.18.1
 	github.com/stretchr/testify v1.5.1 // indirect
