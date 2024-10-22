@@ -411,7 +411,12 @@ func (m Migrator) CreateSequence(values []interface{}) error {
 		tx := m.DB.Session(&gorm.Session{})
 		if err := m.RunWithValue(value, func(stmt *gorm.Statement) error {
 			for _, v := range stmt.Schema.Fields {
-				sequenceName := GenSequenceName(v.Schema.Table)
+				tableName := v.Schema.Table
+				if tx.Statement.Table != "" {
+					tableName = tx.Statement.Table
+					v.Schema.Table = tx.Statement.Table
+				}
+				sequenceName := GenSequenceName(tableName)
 				if v.AutoIncrement {
 					if err := m.dropSequenceIfExists(tx, sequenceName); err != nil {
 						return err
