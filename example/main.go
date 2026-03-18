@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	yasdb "git.yasdb.com/go/gorm-yasdb"
+	yasdb "github.com/yashan-technologies/yashandb-gorm"
 	"gorm.io/gorm"
 )
 

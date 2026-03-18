@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"strings"
 
-	"git.yasdb.com/go/gorm-yasdb/clauses"
+	"github.com/yashan-technologies/yashandb-gorm/clauses"
 
-	_ "git.yasdb.com/go/yasdb-go"
+	_ "github.com/yashan-technologies/yashandb-go"
 	"gorm.io/gorm"
 	"gorm.io/gorm/callbacks"
 	"gorm.io/gorm/clause"
