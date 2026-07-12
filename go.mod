@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/emirpasic/gods v1.18.1
 	github.com/thoas/go-funk v0.9.2
-	github.com/yashan-technologies/yashandb-go v1.4.3
+	github.com/yashan-technologies/yashandb-go v1.4.4-0.20260711165208-93d0929514d7
 	gorm.io/gorm v1.31.1
 )
 

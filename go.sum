@@ -13,8 +13,8 @@ github.com/stretchr/testify v1.4.0 h1:2E4SXV/wtOkTonXsotYi4li6zVWxYlZuYNCXe9XRJy
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 github.com/thoas/go-funk v0.9.2 h1:oKlNYv0AY5nyf9g+/GhMgS/UO2ces0QRdPKwkhY3VCk=
 github.com/thoas/go-funk v0.9.2/go.mod h1:+IWnUfUmFO1+WVYQWQtIJHeRRdaIyyYglZN7xzUPe4Q=
-github.com/yashan-technologies/yashandb-go v1.4.3 h1:NLStdU2Bg7KaJ658ysW5ots+s3YSTSt11+n5BUULRs0=
-github.com/yashan-technologies/yashandb-go v1.4.3/go.mod h1:/maocUNpVUVH/DzqX0OoTwLAcL9O4QW42yMXtpPyEL4=
+github.com/yashan-technologies/yashandb-go v1.4.4-0.20260711165208-93d0929514d7 h1:pitjNQQUFOxhIl+3jUBWHOLccm8ks3fHQP/Du1OVqK8=
+github.com/yashan-technologies/yashandb-go v1.4.4-0.20260711165208-93d0929514d7/go.mod h1:/maocUNpVUVH/DzqX0OoTwLAcL9O4QW42yMXtpPyEL4=
 golang.org/x/text v0.20.0 h1:gK/Kv2otX8gz+wn7Rmb3vT96ZwuoxnQlY+HlJVj7Qug=
 golang.org/x/text v0.20.0/go.mod h1:D4IsuqiFMhST5bX19pQ9ikHC2GsaKyk/oF+pn3ducp4=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
