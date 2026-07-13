@@ -111,7 +111,40 @@ func (m Migrator) CreateTable(values ...interface{}) error {
 	if err := m.CreateSequence(values); err != nil {
 		return err
 	}
-	return m.Migrator.CreateTable(values...)
+	for _, value := range m.ReorderModels(values, false) {
+		if err := m.createTableWithVectorOption(value); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (m Migrator) createTableWithVectorOption(value interface{}) error {
+	needsHeap := false
+	_ = m.RunWithValue(value, func(stmt *gorm.Statement) error {
+		needsHeap = SchemaHasVectorField(stmt.Schema)
+		return nil
+	})
+
+	tx := m.DB.Session(&gorm.Session{})
+	if needsHeap {
+		current := ""
+		if opt, ok := tx.Get("gorm:table_options"); ok {
+			current = fmt.Sprint(opt)
+		}
+		tx = tx.Set("gorm:table_options", mergeVectorTableOption(current, true))
+	}
+
+	base := Migrator{
+		Migrator: migrator.Migrator{
+			Config: migrator.Config{
+				DB:                          tx,
+				Dialector:                   m.Dialector,
+				CreateIndexAfterCreateTable: m.CreateIndexAfterCreateTable,
+			},
+		},
+	}
+	return base.Migrator.CreateTable(value)
 }
 
 func (m Migrator) DropTable(values ...interface{}) error {
